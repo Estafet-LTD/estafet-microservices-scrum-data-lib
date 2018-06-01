@@ -22,10 +22,8 @@ public class GenerateDDL {
 
 	public static void main(String[] args) throws IOException {
 		String microservice = getMicroserviceName();
-		File create = new File("target", "create-" + microservice + "-db.ddl");
-		File drop = new File("target", "drop-" + microservice + "-db.ddl");
-		create.delete();
-		drop.delete();
+		File create = new File("ddl", "create-" + microservice + "-db.ddl");
+		File drop = new File("ddl", "drop-" + microservice + "-db.ddl");
 		new ClassPathXmlApplicationContext("generate-ddl-application-context.xml").close();
 		appendSemicolon(create);
 		appendSemicolon(drop);
@@ -52,7 +50,7 @@ public class GenerateDDL {
 				lines.add(sCurrentLine + ";");
 			}
 		}
-		writeToFile(lines, new File(ddl.getName()));
+		writeToFile(lines, ddl);
 	}
 
 	private static void writeToFile(List<String> lines, File ddl) throws IOException {
