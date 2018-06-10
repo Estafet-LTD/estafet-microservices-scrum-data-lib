@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.rest.RestHelper;
 import com.estafet.microservices.scrum.lib.commons.wait.WaitUntil;
 import com.estafet.microservices.scrum.lib.data.db.ServiceDatabases;
 import com.estafet.microservices.scrum.lib.data.task.Task;

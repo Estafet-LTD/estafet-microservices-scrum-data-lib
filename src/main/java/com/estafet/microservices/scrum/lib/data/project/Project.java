@@ -72,7 +72,7 @@ public class Project {
 		}
 		return projects;
 	}
-	
+
 	@JsonIgnore
 	public ProjectBurndown getBurndown() {
 		ProjectBurndown burndown = new RestTemplate().getForObject(
