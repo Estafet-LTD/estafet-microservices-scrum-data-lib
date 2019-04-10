@@ -3,11 +3,13 @@ package com.estafet.microservices.scrum.lib.data.db;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import com.google.common.io.Resources;
@@ -28,7 +30,7 @@ public class ServiceDatabase {
 
 	@XStreamAlias(value = "db-password-env")
 	private String dbPasswordEnvVariable;
-	
+
 	@XStreamOmitField
 	Connection connection;
 
@@ -40,15 +42,15 @@ public class ServiceDatabase {
 	}
 
 	public String getDbURL() {
-		return System.getenv(dbURLEnvVariable);
+        return getEnvironmentVariable(dbURLEnvVariable);
 	}
 
 	public String getDbUser() {
-		return System.getenv(dbUserEnvVariable);
+		return getEnvironmentVariable(dbUserEnvVariable);
 	}
 
 	public String getDbPassword() {
-		return System.getenv(dbPasswordEnvVariable);
+		return getEnvironmentVariable(dbPasswordEnvVariable);
 	}
 
 	public void init() {
@@ -56,22 +58,22 @@ public class ServiceDatabase {
 			Class.forName("org.postgresql.Driver");
 			connection = DriverManager.getConnection(getDbURL(), getDbUser(), getDbPassword());
 			statement = connection.createStatement();
-		} catch (ClassNotFoundException | SQLException e) {
-			throw new RuntimeException(e);
+		} catch (final ClassNotFoundException | SQLException e) {
+			throw new RuntimeException("Failed to initialise database.", e);
 		}
 	}
-	
-	public boolean exists(String table, String key, Integer value) {
+
+	public boolean exists(final String table, final String key, final Integer value) {
+        final String sqlselect = "select " + key + " from " + table + " where " + key + " = " + value;
 		try {
-			String sqlselect = "select " + key + " from " + table + " where " + key + " = " + value;
 			return statement.executeQuery(sqlselect).next();
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
+		} catch (final SQLException e) {
+			throw new RuntimeException("SQL statement [" + sqlselect + "] failed.", e);
 		} finally {
 			close();
 		}
 	}
-	
+
 	public void clean() {
 		try {
 			executeDDL("drop", statement);
@@ -81,49 +83,74 @@ public class ServiceDatabase {
 			close();
 		}
 	}
-	
+
 	public void close() {
-		try {
-			if (statement != null) {
-				statement.close();
-			}
-			if (connection != null) {
-				connection.close();
-			}
-		} catch (SQLException e) {
-			throw new RuntimeException(e);
-		}
+	    close(statement);
+
+        close(connection);
 	}
 
-	private void executeDDL(String prefix, Statement statement) {
-		for (String stmt : getStatements(prefix + "-" + name + "-db.ddl")) {
+	/**
+	 * Close a resource.
+	 *
+	 * <p>This method must not throw an {@code Exception} because it is called from within a {@code finally} block.</p>
+	 *
+	 * @param resource
+	 *             The resource to close. Can be {@code null}.
+	 */
+	private void close(final AutoCloseable resource) {
+        final Optional<AutoCloseable> optional = Optional.ofNullable(resource);
+        optional.ifPresent(closeable -> {
+            try {
+                closeable.close();
+            } catch (final Exception e) {
+                System.out.println("Warning: closing " + resource.toString() + " failed: " + e.toString() + ".");
+            }
+        });
+    }
+
+    /**
+     * Get the value of an environment variable.
+     *
+     * @param variableName
+     *          The name of the environment variable.
+     * @return
+     *          The value of the environment variable, if it is set.
+     * @throws IllegalStateException
+     *          If the environment variable is not set.
+     */
+    private String getEnvironmentVariable(final String variableName) {
+        final Optional<String> value = Optional.ofNullable(System.getenv(variableName));
+        return value.orElseThrow(() ->
+            new IllegalStateException("The " + variableName + " environment variable is not set."));
+    }
+
+	private void executeDDL(final String prefix, final Statement statement) {
+		for (final String stmt : getStatements(prefix + "-" + name + "-db.ddl")) {
+            final String sqlStatement = stmt.replaceAll("\\;", "");
 			try {
-				statement.executeUpdate(stmt.replaceAll("\\;", ""));
-			} catch (SQLException e) {
+                statement.executeUpdate(sqlStatement);
+			} catch (final SQLException e) {
 				if (prefix.equals("create")) {
-					throw new RuntimeException(e);	
-				} else {
-					System.out.println("Warning - " + e.getMessage());
+					throw new RuntimeException("Create statement [" + sqlStatement + "] failed.", e);
 				}
+				System.out.println("Warning - statement [" + sqlStatement + "] failed: " + e.getMessage());
 			}
 		}
 	}
 
-	private List<String> getStatements(String filename) {
+	private List<String> getStatements(final String filename) {
 		BufferedReader reader = null;
+		URL resource = null;
 		try {
-			reader = new BufferedReader(new InputStreamReader(Resources.getResource(filename).openStream()));
+		    // Never returns null.
+			resource = Resources.getResource(filename);
+            reader = new BufferedReader(new InputStreamReader(resource.openStream()));
 			return reader.lines().collect(Collectors.toList());
-		} catch (IOException e) {
-			throw new RuntimeException(e);
+		} catch (final IOException e) {
+			throw new RuntimeException("Failed to read " + filename + ". Resource is " + resource.toString() + ".", e);
 		} finally {
-			if (reader != null) {
-				try {
-					reader.close();
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				}
-			}
+		    close(reader);
 		}
 	}
 
