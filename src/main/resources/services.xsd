@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Schema for the servces.xml file that is used to define the connection details for service databases. -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified"
+           elementFormDefault="qualified">
+
+    <xs:simpleType name="serviceNameType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:maxLength value="30" />
+            <xs:pattern value="[A-Za-z][A-Za-z0-9-]+" />
+        </xs:restriction>
+    </xs:simpleType>
+
+    <xs:simpleType name="EnvironmentVariableNameType">
+        <xs:restriction base="xs:string">
+            <xs:minLength value="1" />
+            <xs:maxLength value="50" />
+            <xs:pattern value="[A-Za-z_][A-Za-z0-9_]+" />
+        </xs:restriction>
+    </xs:simpleType>
+    
+    <xs:complexType name="serviceType">
+        <xs:sequence>
+            <xs:element name="name" maxOccurs="1" minOccurs="1" type="serviceNameType" />
+            <xs:element name="db-url-env" maxOccurs="1" minOccurs="1" type="EnvironmentVariableNameType" />
+            <xs:element name="db-user-env" maxOccurs="1" minOccurs="1" type="EnvironmentVariableNameType" />
+            <xs:element name="db-password-env" maxOccurs="1" minOccurs="1" type="EnvironmentVariableNameType" />
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="servicesType">
+        <xs:sequence>
+            <xs:element name="service" type="serviceType" maxOccurs="unbounded" minOccurs="1"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:element name="services" type="servicesType" />
+</xs:schema>
