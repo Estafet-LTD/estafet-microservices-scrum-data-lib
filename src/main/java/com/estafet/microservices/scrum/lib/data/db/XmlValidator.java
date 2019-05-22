@@ -5,7 +5,6 @@ package com.estafet.microservices.scrum.lib.data.db;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URL;
 
 import javax.xml.XMLConstants;
@@ -14,9 +13,7 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.xml.sax.EntityResolver;
 import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
@@ -31,34 +28,11 @@ import org.xml.sax.SAXParseException;
 public class XmlValidator {
 
     /**
-     * Prevent resolving external entities.
-     * @author Steve Brown, Estafet Ltd.
-     *
-     */
-    private static class NoopEntityResolver implements EntityResolver {
-
-        /**
-         * Don't resolve any entities.
-         * @param publicId
-         *          The public Id.
-         * @param systemId
-         *          The system Id.
-         * @return
-         *          An empty {@link InputSource}.
-         *
-         */
-        @Override
-        public InputSource resolveEntity(final String publicId, final String systemId) {
-            return new InputSource(new StringReader(""));
-        }
-    }
-
-    /**
      * SAX Parser error handler for the XML validator.
      * @author Steve Brown, Estafet Ltd.
      *
      */
-    private static final class ValidationErrorHandler implements ErrorHandler {
+    static final class ValidationErrorHandler implements ErrorHandler {
 
         /**
          * Receive notification of a warning.
@@ -156,7 +130,7 @@ public class XmlValidator {
      * @return
      *          {@code true} if the validation is successful. {@code false} otherwise.
      */
-    public boolean validate(final String xmlFile, final String schemaFile) {
+    public void validate(final String xmlFile, final String schemaFile) {
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
         try {
             schemaFactory.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
@@ -171,12 +145,11 @@ public class XmlValidator {
             validator.setErrorHandler(new ValidationErrorHandler());
 
             validator.validate(new StreamSource(getResource(xmlFile).toExternalForm()), null);
-            return true;
         }
         catch (final SAXException | IOException e) {
-            System.out.println("ERROR: Failed to validate " + xmlFile +
-                               " against the schema in " + schemaFile + ". The error is " + e.toString());
-            return false;
+            final String message = "ERROR: Failed to validate " + xmlFile +
+                                   " against the schema in " + schemaFile + ". The error is " + e.toString();
+            throw new RuntimeException(message, e);
         }
     }
 

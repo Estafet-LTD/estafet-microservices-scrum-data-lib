@@ -34,5 +34,5 @@
         </xs:sequence>
     </xs:complexType>
 
-    <xs:element name="services" type="servicesType" />
+    <xs:element name="services" type="servicesType"/>
 </xs:schema>

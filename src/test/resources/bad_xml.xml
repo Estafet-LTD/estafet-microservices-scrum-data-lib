@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<services>
+    <service>
+        <name>project-api</name>
+        <db-url-env>DATABASE_URL</db-url-env>
+        <db-user-env>DATABASE_USER</db-user-env>
+        <db-password-env>DATABASE_PASSWORD</db-password-env>
+    </service>
+<services>

@@ -30,17 +30,17 @@ public class ServiceDatabases {
     private static final String SERVICES_XML_FILE = "services.xml";
 
     /**
-     * Drop and  create the database for each service.
+     * Drop and create the database for each service.
      */
     public static void clean() {
 
 	    // Make sure the services.xml file is valid.
-	    validateServicesFile();
+	    validateServicesFile(SERVICES_XML_FILE);
 
 	    // Create a ServiceDatabase object from the services XML file.
 	    final ServiceDatabases serviceDatabases =  createServiceDatabases();
 
-
+	    // Drop and create each service database.
         for (final ServiceDatabase serviceDatabase : serviceDatabases.getDatabases()) {
             serviceDatabase.clean();
         }
@@ -87,12 +87,15 @@ public class ServiceDatabases {
 	 * {@link #SERVICES_XML_FILE} file. This object contains a list of {@link ServiceDatabase} objects, each of which
 	 * allows JDBC connections to a specific service database.</p>
 	 *
+	 * <p>This method expects that {@link #validateServicesFile()} has been called.</p>
+	 *
 	 * @return
 	 *         The {@link ServiceDatabases} object.
 	 * @throws RuntimeException
 	 *         If an error occurs.
 	 */
-	private static ServiceDatabases createServiceDatabases() {
+	@SuppressWarnings("javadoc")
+    private static ServiceDatabases createServiceDatabases() {
         BufferedReader reader = null;
 		try {
 			reader = new BufferedReader(new InputStreamReader(Resources.getResource(SERVICES_XML_FILE).openStream()));
@@ -109,19 +112,15 @@ public class ServiceDatabases {
 
     /**
      * Validate the {@link #SERVICES_XML_FILE} file against the {@link #SERVICES_SCHEMA_FILE} file.
+     * @param servicesFile
+     *          The name of the services file. Providing this as a parameter makes testing much easier.
      *
      * @throws RuntimeException
      *          If the validation fails.
      *
      */
-    private static void validateServicesFile() {
-	    final boolean xmlFileValid = new XmlValidator().validate(SERVICES_XML_FILE, SERVICES_SCHEMA_FILE);
-
-	    if (!xmlFileValid) {
-	        throw new RuntimeException("The services XML file, " + SERVICES_XML_FILE +
-	                                   " does not validate against the XML schema in " +
-	                                   SERVICES_SCHEMA_FILE + ".");
-	    }
+    private static void validateServicesFile(final String servicesFile) {
+	    new XmlValidator().validate(servicesFile, SERVICES_SCHEMA_FILE);
     }
 
     /**
