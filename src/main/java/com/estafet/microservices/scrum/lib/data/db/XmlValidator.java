@@ -127,8 +127,8 @@ public class XmlValidator {
      *          The XML file to validate. Must be a resource in the classpath.
      * @param schemaFile
      *          The Schema file to validate XML file against. Must be a resource in the classpath.
-     * @return
-     *          {@code true} if the validation is successful. {@code false} otherwise.
+     * @throws RuntimeException
+     *          If validation fails.
      */
     public void validate(final String xmlFile, final String schemaFile) {
         final SchemaFactory schemaFactory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);

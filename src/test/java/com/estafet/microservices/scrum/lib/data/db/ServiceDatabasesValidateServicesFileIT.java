@@ -5,10 +5,13 @@ import java.io.FileNotFoundException;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.contrib.java.lang.system.SystemErrRule;
+import org.junit.contrib.java.lang.system.SystemOutRule;
 import org.junit.rules.ExpectedException;
 import org.powermock.reflect.Whitebox;
 
-import com.estafet.microservices.scrum.lib.test.CauseMatcher;
+import com.estafet.microservices.scrum.lib.test.CauseMatchers;
+import com.estafet.microservices.scrum.lib.test.CauseMessageMatchType;
 
 /**
  * Integration Test suite for {@link ServiceDatabases#validateServicesFileString()}.
@@ -46,6 +49,18 @@ public class ServiceDatabasesValidateServicesFileIT {
     public final ExpectedException thrown = ExpectedException.none();
 
     /**
+     * Disable output to {@link System#out}.
+     */
+    @Rule
+    public final SystemOutRule systemOut = new SystemOutRule().mute();
+
+    /**
+     * Disable output to {@link System#err}.
+     */
+    @Rule
+    public final SystemErrRule systemErr = new SystemErrRule().mute();
+
+    /**
      * Test {@link ServiceDatabases#validateServicesFile(String} happy path.
      * @throws Exception
      *          Iff PowerMock fails.
@@ -54,26 +69,6 @@ public class ServiceDatabasesValidateServicesFileIT {
     public final void testValidateServicesFileHappyPath() throws Exception {
 
         Whitebox.invokeMethod(ServiceDatabases.class, METHOD_UNDER_TEST, "valid_services.xml");
-    }
-
-    /**
-     * Test {@link ServiceDatabases#validateServicesFile(String} with non-existent file.
-     * @throws Exception
-     *          Iff PowerMock fails.
-     */
-    @Test
-    public final void testValidateServicesServicesFileNotFound() throws Exception {
-        final String servicesFile = "non_existent.xml";
-
-        final String causeMessage = "The " + servicesFile +" resource is not on the classpath.";
-        final Throwable expectedCause = new FileNotFoundException(causeMessage);
-        final String expectedMessage = "ERROR: Failed to validate " +
-                                       servicesFile +
-                                       " against the schema in " +
-                                       SERVICES_SCHEMA_FILE + "." +
-                                       " The error is " +
-                                       expectedCause.toString();
-        doExpectedFailureTest(servicesFile, expectedMessage, expectedCause);
     }
 
     /**
@@ -113,15 +108,23 @@ public class ServiceDatabasesValidateServicesFileIT {
     }
 
     /**
-     * Test {@link ServiceDatabases#validateServicesFile(String} with an empty file.
+     * Test {@link ServiceDatabases#validateServicesFile(String} with non-existent file.
      * @throws Exception
      *          Iff PowerMock fails.
      */
     @Test
-    public final void testValidateServicesServicesNoServices() throws Exception {
-        final String servicesFile = "no_services.xml";
+    public final void testValidateServicesServicesFileNotFound() throws Exception {
+        final String servicesFile = "non_existent.xml";
 
-        doSAXParseFailureTest(servicesFile);
+        final String causeMessage = "The " + servicesFile +" resource is not on the classpath.";
+        final Throwable expectedCause = new FileNotFoundException(causeMessage);
+        final String expectedMessage = "ERROR: Failed to validate " +
+                                       servicesFile +
+                                       " against the schema in " +
+                                       SERVICES_SCHEMA_FILE + "." +
+                                       " The error is " +
+                                       expectedCause.toString();
+        doExpectedFailureTest(servicesFile, expectedMessage, expectedCause);
     }
 
     /**
@@ -132,6 +135,18 @@ public class ServiceDatabasesValidateServicesFileIT {
     @Test
     public final void testValidateServicesServicesMissingName() throws Exception {
         final String servicesFile = "missing_name.xml";
+
+        doSAXParseFailureTest(servicesFile);
+    }
+
+    /**
+     * Test {@link ServiceDatabases#validateServicesFile(String} with an empty file.
+     * @throws Exception
+     *          Iff PowerMock fails.
+     */
+    @Test
+    public final void testValidateServicesServicesNoServices() throws Exception {
+        final String servicesFile = "no_services.xml";
 
         doSAXParseFailureTest(servicesFile);
     }
@@ -158,25 +173,6 @@ public class ServiceDatabasesValidateServicesFileIT {
         final String servicesFile = "unknown_field.xml";
 
         doSAXParseFailureTest(servicesFile);
-    }
-
-    /**
-     * Execute a test where a SAX parse exception is thrown.
-     *
-     * @param servicesFile
-     *          The services XML file to use.
-     * @throws Exception
-     *          IF PowerMock fails.
-     */
-    private void doSAXParseFailureTest(final String servicesFile) throws Exception {
-        final Class<? extends Throwable> expectedCauseType = org.xml.sax.SAXParseException.class;
-        final String expectedMessage = "ERROR: Failed to validate " +
-                                       servicesFile +
-                                       " against the schema in " +
-                                       SERVICES_SCHEMA_FILE + "." +
-                                       " The error is " +
-                                       expectedCauseType.getName();
-        doExpectedFailureTest(servicesFile, expectedMessage, expectedCauseType);
     }
 
     /**
@@ -220,22 +216,22 @@ public class ServiceDatabasesValidateServicesFileIT {
     }
 
     /**
-     * Set the expected exception.
+     * Execute a test where a SAX parse exception is thrown.
      *
-     * @param T
-     *          The type of the expected cause.
-     * @param expectedMessage
-     *          The expected message.
-     * @param expectedCause
-     *          The expected cause. Can be {@code null}.
-     *
+     * @param servicesFile
+     *          The services XML file to use.
+     * @throws Exception
+     *          IF PowerMock fails.
      */
-    private <T extends Throwable> void setExpectedException(final String expectedMessage, final T expectedCause) {
-
-        thrown.expect(RuntimeException.class);
-        thrown.expectMessage(expectedMessage);
-        thrown.expectCause(new CauseMatcher(expectedCause));
-        thrown.reportMissingExceptionWithMessage("RuntimeException expected.");
+    private void doSAXParseFailureTest(final String servicesFile) throws Exception {
+        final Class<? extends Throwable> expectedCauseType = org.xml.sax.SAXParseException.class;
+        final String expectedMessage = "ERROR: Failed to validate " +
+                                       servicesFile +
+                                       " against the schema in " +
+                                       SERVICES_SCHEMA_FILE + "." +
+                                       " The error is " +
+                                       expectedCauseType.getName();
+        doExpectedFailureTest(servicesFile, expectedMessage, expectedCauseType);
     }
 
     /**
@@ -252,7 +248,30 @@ public class ServiceDatabasesValidateServicesFileIT {
 
         thrown.expect(RuntimeException.class);
         thrown.expectMessage(expectedMessage);
-        thrown.expectCause(new CauseMatcher(expectedCauseType));
+
+        // Can't use the built-in Hamcrest matchers (e.g org.hamcrest.core.IsEqual or org.hamcrest.core.IsSame) because
+        // they use Object.equals(), which compares Object references for equality.
+        thrown.expectCause(CauseMatchers.causeType(expectedCauseType));
+
+        thrown.reportMissingExceptionWithMessage("RuntimeException expected.");
+    }
+
+    /**
+     * Set the expected exception.
+     *
+     * @param T
+     *          The type of the expected cause.
+     * @param expectedMessage
+     *          The expected message.
+     * @param expectedCause
+     *          The expected cause. Can be {@code null}.
+     *
+     */
+    private void setExpectedException(final String expectedMessage, final Throwable expectedCause) {
+
+        thrown.expect(RuntimeException.class);
+        thrown.expectMessage(expectedMessage);
+        thrown.expectCause(CauseMatchers.causeMatcher(expectedCause, CauseMessageMatchType.CAUSE_MESSAGE_IS_SAME));
         thrown.reportMissingExceptionWithMessage("RuntimeException expected.");
     }
 }
