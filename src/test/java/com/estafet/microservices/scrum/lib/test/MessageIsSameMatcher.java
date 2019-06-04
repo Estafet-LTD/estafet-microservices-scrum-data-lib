@@ -14,6 +14,8 @@ public class MessageIsSameMatcher extends MessageMatcher {
     /**
      * Constructor.
      *
+     * <p>{@link IsEqual} handles {@code null} values safely.</p>
+     *
      * @param theExpectedMessage
      *          The expected message to match actual messages against.
      */

@@ -61,7 +61,7 @@ public final class MessageMatchers {
      * Create a matcher to verify that the actual message is the same as the expected message.
      *
      * @param expectedCauseMessage
-     *          The expected cause message.
+     *          The expected cause message. Can {@code null}, in which case, the actual message must be {@code null}.
      * @return
      *          The matcher.
      */

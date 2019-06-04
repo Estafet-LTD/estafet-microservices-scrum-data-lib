@@ -79,18 +79,17 @@ public class CauseTypeAndMessageMatcher extends CauseMatcher {
     /**
      * Describe the mismatch.
      *
-     * @param item
-     *          The item that failed to match. Will never be {@code null}.
+     * @param actualCause
+     *          The cause that failed to match. Will never be {@code null}.
      * @param mismatchDescription
      *          The description to complete.
      */
     @Override
-    public void describeMismatchSafely(@SuppressWarnings("unused") final Throwable item,
+    public void describeMismatchSafely(@SuppressWarnings("unused") final Throwable actualCause,
                                        final Description mismatchDescription) {
 
          mismatchDescription.appendDescriptionOf(causeTypeMatcher)
                             .appendText(" and ")
-                            .appendText(", which is neither a ")
                             .appendDescriptionOf(messageMatcher);
     }
 }

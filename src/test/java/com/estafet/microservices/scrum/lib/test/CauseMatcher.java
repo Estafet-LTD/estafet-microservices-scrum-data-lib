@@ -8,6 +8,8 @@ import org.hamcrest.TypeSafeMatcher;
 /**
  * Marker class for cause matchers.
  *
+ * <p>Subclasses of {@link CauseMatcher} do not need to use generics.</p>
+ *
  * @author Steve Brown, Estafet Ltd.
  *
  */

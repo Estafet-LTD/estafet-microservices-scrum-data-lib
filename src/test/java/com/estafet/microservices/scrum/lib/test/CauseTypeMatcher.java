@@ -90,9 +90,9 @@ public class CauseTypeMatcher extends CauseMatcher {
          mismatchDescription.appendText(" The cause was a ")
                             .appendValue(actualCause.getClass().getName())
                             .appendText(", which is neither a ")
-                            .appendValue(expectedCauseType)
+                            .appendText(expectedCauseType.getName())
                             .appendText(", nor a subclass of ")
-                            .appendValue(expectedCauseType)
+                            .appendText(expectedCauseType.getName())
                             .appendText("\".");
     }
 }

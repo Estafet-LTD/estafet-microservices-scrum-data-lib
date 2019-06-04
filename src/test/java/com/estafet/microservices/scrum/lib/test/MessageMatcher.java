@@ -11,7 +11,7 @@ import org.hamcrest.TypeSafeMatcher;
  */
 public abstract class MessageMatcher extends TypeSafeMatcher<String> {
     /**
-     * The message to match.
+     * The {@link BaseMatcher} to match messages.
      */
     protected final BaseMatcher<String> matcher;
 
@@ -46,55 +46,4 @@ public abstract class MessageMatcher extends TypeSafeMatcher<String> {
     public boolean matchesSafely(final String actualMessage) {
         return matcher.matches(actualMessage);
     }
-
-    /**
-     * <p>The actual message is the same as the expected message.</p>
-     * @param expected
-     *          The expected message.
-     *
-     * @return
-     *          A {@link TypeSafeMatcher} that matches a message for equality.
-     *
-     */
-    public static MessageIsSameMatcher messageIs(final String expected) {
-        return new MessageIsSameMatcher(expected);
-    }
-
-    /**
-     * <p>The actual message contains the expected message.</p>
-     * @param expected
-     *          The expected substring.
-     *
-     * @return
-     *          A {@link TypeSafeMatcher} that matches a substring of the actual message.
-     *
-     */
-    public static MessageContainsMatcher messageContains(final String expected) {
-        return new MessageContainsMatcher(expected);
-    }
-
-    /**
-     * <p>The actual message starts with the expected message.</p>
-     * @param expected
-     *      The expected start of the actual message.
-     *
-     * @return
-     *          A {@link TypeSafeMatcher} that matches the start of the actual message.
-     *
-     */
-    public static MessageStartsWithMatcher messageStartsWith(final String expected) {
-        return new MessageStartsWithMatcher(expected);
-    }
-
-    /**
-     * <p>The actual message ends with the expected message.</p>
-     *
-     * @return
-     *          A {@link TypeSafeMatcher} that matches the end of the actual message.
-     *
-     */
-    public static MessageEndsWithMatcher messageEndsWith(final String expected) {
-        return new MessageEndsWithMatcher(expected);
-    }
-
 }

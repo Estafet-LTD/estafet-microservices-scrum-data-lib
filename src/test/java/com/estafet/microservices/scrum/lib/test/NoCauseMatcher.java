@@ -35,43 +35,33 @@ public class NoCauseMatcher extends CauseMatcher {
     }
 
     /**
-     * Match the supplied actual.
+     * Match the supplied actual cause.
      *
-     * @param actual
-     *          The actual to match.
+     * @param actualCause
+     *          The actual cause to match.
      * @return
-     *          {@code true} if {@code actual} is {@code null}.
+     *          {@code true} if {@code actualCause} is {@code null}.
      *
      * @see org.hamcrest.TypeSafeMatcher#matchesSafely(java.lang.Object)
      */
     @Override
-    protected boolean matchesSafely(final Throwable actual) {
-        return actual.getCause() == null;
+    protected boolean matchesSafely(final Throwable actualCause) {
+        return actualCause == null;
     }
 
     /**
      * Describe the mismatch.
      *
-     * @param actual
+     * @param actualCause
      *          The actual {@code Throwable} that failed to match.
      * @param mismatchDescription
      *          The description to complete.
      */
     @Override
-    public void describeMismatchSafely(final Throwable actual, final Description mismatchDescription) {
+    public void describeMismatchSafely(final Throwable actualCause, final Description mismatchDescription) {
 
-        if (actual != null) {
-            final Throwable cause = actual.getCause();
-            if (cause != null) {
-                mismatchDescription.appendText("Cause should be null, but was a ")
-                                   .appendText(cause.getClass().getName())
-                                   .appendText(" with a message of \"")
-                                   .appendValue(cause.getLocalizedMessage())
-                                   .appendText("\".");
-            }
-        }
-        else {
-            mismatchDescription.appendText("The exception was null.");
-        }
+            mismatchDescription.appendText("The cause should be null, but was a ")
+                               .appendValue(actualCause)
+                               .appendText("\".");
     }
 }

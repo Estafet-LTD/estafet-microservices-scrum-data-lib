@@ -4,7 +4,7 @@ import org.hamcrest.Description;
 import org.hamcrest.core.StringEndsWith;
 
 /**
- * Match if the actual message starts with the expected message.
+ * Match if the actual message ends with the expected message.
  *
  * @author Steve Brown, Estafet Ltd.
  *
@@ -31,7 +31,7 @@ public class MessageEndsWithMatcher extends MessageMatcher {
      */
     @Override
     public void describeTo(final Description description) {
-        description.appendText("a message starting with ")
+        description.appendText("a message ending with ")
                    .appendValue(expectedMessage);
 
     }
