@@ -143,9 +143,7 @@
 		<url>https://github.com/Estafet-LTD/estafet-microservices-scrum-data-lib</url>
 		<tag>HEAD</tag>
 	</scm>
-
 	<name>Libaries for Microservices data population for testing</name>
 	<url>https://github.com/Estafet-LTD/estafet-microservices-scrum-data-lib</url>
 	<description>Libaries for Microservices data population for testing</description>
-
 </project>
