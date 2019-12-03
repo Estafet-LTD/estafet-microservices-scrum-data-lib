@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>com.estafet.microservices.scrum</groupId>
 			<artifactId>microservices-scrum-commons-lib</artifactId>
-			<version>1.0.3-SNAPSHOT</version>
+			<version>1.0.1</version>
 		</dependency>
 	</dependencies>
 
