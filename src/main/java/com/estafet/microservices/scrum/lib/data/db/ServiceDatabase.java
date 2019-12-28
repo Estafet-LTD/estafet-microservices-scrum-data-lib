@@ -10,6 +10,7 @@ import java.sql.Statement;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.google.common.io.Resources;
 import com.thoughtworks.xstream.annotations.XStreamAlias;
 import com.thoughtworks.xstream.annotations.XStreamOmitField;
@@ -40,15 +41,15 @@ public class ServiceDatabase {
 	}
 
 	public String getDbURL() {
-		return System.getenv(dbURLEnvVariable);
+		return PropertyUtils.instance().getProperty(dbURLEnvVariable);
 	}
 
 	public String getDbUser() {
-		return System.getenv(dbUserEnvVariable);
+		return PropertyUtils.instance().getProperty(dbUserEnvVariable);
 	}
 
 	public String getDbPassword() {
-		return System.getenv(dbPasswordEnvVariable);
+		return PropertyUtils.instance().getProperty(dbPasswordEnvVariable);
 	}
 
 	public void init() {
