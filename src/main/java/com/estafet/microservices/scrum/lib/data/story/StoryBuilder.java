@@ -2,6 +2,7 @@ package com.estafet.microservices.scrum.lib.data.story;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.estafet.microservices.scrum.lib.commons.wait.WaitUntil;
 import com.estafet.microservices.scrum.lib.data.db.ServiceDatabases;
 
@@ -36,7 +37,7 @@ public class StoryBuilder {
 	}
 
 	public Story build() {
-		Story story = new RestTemplate().postForObject(System.getenv("STORY_API_SERVICE_URI") + "/project/{id}/story",
+		Story story = new RestTemplate().postForObject(PropertyUtils.instance().getProperty("STORY_API_SERVICE_URI") + "/project/{id}/story",
 				new Story().setDescription(description).setTitle(title).setStorypoints(storypoints),
 				Story.class, projectId);
 		new WaitUntil() {

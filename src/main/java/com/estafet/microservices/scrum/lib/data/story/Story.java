@@ -5,7 +5,7 @@ import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
-import com.estafet.microservices.scrum.lib.commons.rest.RestHelper;
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.estafet.microservices.scrum.lib.commons.wait.WaitUntil;
 import com.estafet.microservices.scrum.lib.data.db.ServiceDatabases;
 import com.estafet.microservices.scrum.lib.data.task.Task;
@@ -59,13 +59,13 @@ public class Story {
 	}
 
 	public static Story getStory(Integer storyId) {
-		return new RestTemplate().getForObject(System.getenv("STORY_API_SERVICE_URI") + "/story/{id}", Story.class,
+		return new RestTemplate().getForObject(PropertyUtils.instance().getProperty("STORY_API_SERVICE_URI") + "/story/{id}", Story.class,
 				storyId);
 	}
 
 	@SuppressWarnings("rawtypes")
 	public List<Task> getTasks() {
-		List objects = new RestTemplate().getForObject(System.getenv("TASK_API_SERVICE_URI") + "/story/{storyId}/tasks",
+		List objects = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("TASK_API_SERVICE_URI") + "/story/{storyId}/tasks",
 				List.class, id);
 		List<Task> tasks = new ArrayList<Task>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -80,7 +80,7 @@ public class Story {
 
 	public void addToSprint(Integer sprintId) {
 		this.sprintId = sprintId;
-		new RestTemplate().postForObject(System.getenv("STORY_API_SERVICE_URI") + "/add-story-to-sprint",
+		new RestTemplate().postForObject(PropertyUtils.instance().getProperty("STORY_API_SERVICE_URI") + "/add-story-to-sprint",
 				new AddSprintStory().setSprintId(sprintId).setStoryId(id), Story.class);
 		new WaitUntil() {
 			public boolean success() {

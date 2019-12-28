@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.estafet.microservices.scrum.lib.commons.wait.WaitUntil;
 import com.estafet.microservices.scrum.lib.data.db.ServiceDatabases;
 import com.estafet.microservices.scrum.lib.data.sprint.Sprint;
@@ -61,7 +62,7 @@ public class Project {
 	
 	@SuppressWarnings("rawtypes")
 	public static List<Project> getProjects() {
-		List objects = new RestTemplate().getForObject(System.getenv("PROJECT_API_SERVICE_URI") + "/projects",
+		List objects = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("PROJECT_API_SERVICE_URI") + "/projects",
 				List.class);
 		List<Project> projects = new ArrayList<Project>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -76,7 +77,7 @@ public class Project {
 	@JsonIgnore
 	public ProjectBurndown getBurndown() {
 		ProjectBurndown burndown = new RestTemplate().getForObject(
-				System.getenv("PROJECT_BURNDOWN_SERVICE_URI") + "/project/{id}/burndown", ProjectBurndown.class,
+				PropertyUtils.instance().getProperty("PROJECT_BURNDOWN_SERVICE_URI") + "/project/{id}/burndown", ProjectBurndown.class,
 				id);
 		return burndown;
 	}
@@ -84,7 +85,7 @@ public class Project {
 	@SuppressWarnings("rawtypes")
 	@JsonIgnore
 	public List<Sprint> getSprints() {
-		List objects = new RestTemplate().getForObject(System.getenv("SPRINT_API_SERVICE_URI") + "/project/{id}/sprints",
+		List objects = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("SPRINT_API_SERVICE_URI") + "/project/{id}/sprints",
 				List.class, id);
 		List<Sprint> sprints = new ArrayList<Sprint>();
 		ObjectMapper mapper = new ObjectMapper();
@@ -99,7 +100,7 @@ public class Project {
 	@SuppressWarnings("rawtypes")
 	@JsonIgnore
 	public List<Story> getStories() {
-		List objects = new RestTemplate().getForObject(System.getenv("STORY_API_SERVICE_URI") + "/project/{id}/stories",
+		List objects = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("STORY_API_SERVICE_URI") + "/project/{id}/stories",
 				List.class, id);
 		List<Story> stories = new ArrayList<Story>();
 		ObjectMapper mapper = new ObjectMapper();

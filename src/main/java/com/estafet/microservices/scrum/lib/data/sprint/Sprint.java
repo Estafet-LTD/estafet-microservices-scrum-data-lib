@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.estafet.microservices.scrum.lib.commons.wait.WaitUntil;
 import com.estafet.microservices.scrum.lib.data.project.Project;
 import com.estafet.microservices.scrum.lib.data.story.Story;
@@ -62,7 +63,7 @@ public class Sprint {
 	}
 	
 	public static Sprint getSprint(Integer sprintId) {
-		return new RestTemplate().getForObject(System.getenv("SPRINT_API_SERVICE_URI") + "/sprint/{id}",
+		return new RestTemplate().getForObject(PropertyUtils.instance().getProperty("SPRINT_API_SERVICE_URI") + "/sprint/{id}",
 				Sprint.class, sprintId);
 	}
 	
@@ -77,7 +78,7 @@ public class Sprint {
 	
 	@JsonIgnore
 	public SprintBurndown getSprintBurndown() {
-		SprintBurndown burndown = new RestTemplate().getForObject(System.getenv("SPRINT_BURNDOWN_SERVICE_URI") + "/sprint/{id}/burndown",
+		SprintBurndown burndown = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("SPRINT_BURNDOWN_SERVICE_URI") + "/sprint/{id}/burndown",
 				SprintBurndown.class, id);
 		return burndown;
 	}

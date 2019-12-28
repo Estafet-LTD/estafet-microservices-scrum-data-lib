@@ -2,6 +2,8 @@ package com.estafet.microservices.scrum.lib.data.project;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
+
 public class ProjectBuilder {
 
 	private String title;
@@ -26,7 +28,7 @@ public class ProjectBuilder {
 	}
 
 	public Project build() {
-		Project project =  new RestTemplate().postForObject(System.getenv("PROJECT_API_SERVICE_URI") + "/project",
+		Project project =  new RestTemplate().postForObject(PropertyUtils.instance().getProperty("PROJECT_API_SERVICE_URI") + "/project",
 				new Project().setTitle(title).setSprintLengthDays(sprintLengthDays).setNoSprints(noSprints),
 				Project.class);
 		project.newProjectWait();

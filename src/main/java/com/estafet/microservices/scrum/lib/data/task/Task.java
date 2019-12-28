@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.web.client.RestTemplate;
 
+import com.estafet.microservices.scrum.lib.commons.properties.PropertyUtils;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
@@ -54,24 +55,24 @@ public class Task {
 	}
 	
 	public static Task getTask(Integer taskId) {
-		return new RestTemplate().getForObject(System.getenv("TASK_API_SERVICE_URI") + "/task/{id}",
+		return new RestTemplate().getForObject(PropertyUtils.instance().getProperty("TASK_API_SERVICE_URI") + "/task/{id}",
 				Task.class, taskId);
 	}
 	
 	@SuppressWarnings("unchecked")
 	private String getLastSprintDay() {
-		List<String> days = new RestTemplate().getForObject(System.getenv("SPRINT_API_SERVICE_URI") + "/sprint/{id}/days",
+		List<String> days = new RestTemplate().getForObject(PropertyUtils.instance().getProperty("SPRINT_API_SERVICE_URI") + "/sprint/{id}/days",
 				List.class, sprintId);
 		return days.get(days.size() - 1);
 	}
 	
 	public void claim() {
-		new RestTemplate().postForObject(System.getenv("TASK_API_SERVICE_URI") + "/task/{id}/claim", null,
+		new RestTemplate().postForObject(PropertyUtils.instance().getProperty("TASK_API_SERVICE_URI") + "/task/{id}/claim", null,
 				Task.class, id);
 	}
 	
 	public void complete() {
-		new RestTemplate().postForObject(System.getenv("TASK_API_SERVICE_URI") + "/task/{id}/complete", getLastSprintDay(),
+		new RestTemplate().postForObject(PropertyUtils.instance().getProperty("TASK_API_SERVICE_URI") + "/task/{id}/complete", getLastSprintDay(),
 				Task.class, id);
 	}
 
